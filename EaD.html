@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Avaliações - AV1, AV2, AV3 | Sistema de Respostas</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+            margin: 0;
+            padding: 24px 16px;
+            color: #0f172a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* Cabeçalho */
+        .header {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            padding: 24px 28px;
+            color: white;
+        }
+
+        .header h1 {
+            margin: 0 0 6px 0;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: -0.3px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
+        /* Abas */
+        .tabs {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 20px;
+            gap: 12px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 16px 8px 12px 8px;
+            margin-right: 8px;
+            cursor: pointer;
+            color: #475569;
+            transition: 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: #1e293b;
+            border-bottom-color: #cbd5e1;
+        }
+
+        /* painéis das avaliações */
+        .tab-pane {
+            display: none;
+            padding: 28px 28px 32px 28px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .tab-pane.active-pane {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .question-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 18px 22px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            transition: 0.1s;
+        }
+
+        .question-text {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 16px;
+            color: #0f172a;
+            line-height: 1.4;
+            background: #fefce8;
+            padding: 8px 12px;
+            border-radius: 14px;
+            border-left: 5px solid #3b82f6;
+        }
+
+        .alternatives {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-left: 8px;
+        }
+
+        .alt-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 14px;
+            background: #f9f9ff;
+            transition: background 0.15s;
+            border: 1px solid #eef2ff;
+        }
+
+        .alt-option:hover {
+            background: #eef2ff;
+        }
+
+        .alt-option input {
+            width: 20px;
+            height: 20px;
+            accent-color: #2563eb;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .alt-option label {
+            font-weight: 500;
+            color: #1e293b;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* botões e rodapé */
+        .action-bar {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 28px;
+        }
+
+        .btn {
+            border: none;
+            background: #eef2ff;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #1e293b;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: scale(0.97);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .result-area {
+            background: #f1f5f9;
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-top: 24px;
+            border-left: 6px solid #10b981;
+        }
+
+        .result-stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 12px 20px;
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .total-score {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: #1e293b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 28px;
+            text-align: center;
+        }
+
+        hr {
+            margin: 10px 0;
+        }
+
+        footer {
+            font-size: 0.75rem;
+            text-align: center;
+            padding: 16px;
+            color: #64748b;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 700px) {
+            .tab-pane {
+                padding: 18px;
+            }
+            .question-card {
+                padding: 14px;
+            }
+            .stat-card {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📋 AVALIAÇÃO DE SISTEMAS</h1>
+        <p>AV1 · AV2 · AV3 | Selecione as respostas e gere o resultado final</p>
+    </div>
+
+    <!-- Navegação por abas -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="av1">📌 AV1 - Segurança & Requisitos</button>
+        <button class="tab-btn" data-tab="av2">⚙️ AV2 - Modelagem & Processos</button>
+        <button class="tab-btn" data-tab="av3">🔄 AV3 - Métodos Ágeis & Coleta</button>
+    </div>
+
+    <!-- AV1 (9 questões) -->
+    <div id="av1" class="tab-pane active-pane">
+        <div class="question-card" data-qid="av1_q1">
+            <div class="question-text">1. (Segurança de dados) - Qual ação mais eficaz para melhorar a segurança dos dados?</div>
+            <div class="alternatives">
+                <div class="alt-option"><input type="radio" name="av1_q1" value="A"><label>A) Backup regular para evitar perda de dados</label></div>
+                <div class="alt-option"><input type="radio" name="av1_q1" value="B"><label>B) Restringir acesso com autenticação e autorização robusta</label></div>
+                <div class="alt-option"><input type="radio" name="av1_q1" value="C"><label>C) Migrar dados para nuvem confiando na segurança do provedor</label></div>
+                <div class="alt-option"><input type="radio" name="av1_q1" value="D"><label>D) Hardware moderno para velocidade</label></div>
+            </div>
+        </div>
+        <div class="question-card" data-qid="av1_q2">
+            <div class="question-text">2. (Coleta requisitos) - Principal técnica para identificar requisitos dos usuários?</div>
+            <div class="alternatives"><div class="alt-option"><input type="radio" name="av1_q2" value="A"><label>A) Workshops de brainstorming com usuários</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q2" value="B"><label>B) Análise de código fonte</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q2" value="C"><label>C) Testes de software extensivos</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q2" value="D"><label>D) Ignorar opiniões e seguir melhores práticas</label></div></div>
+        </div>
+        <div class="question-card" data-qid="av1_q3">
+            <div class="question-text">3. (Modelagem) - Objetivo principal da modelagem de sistemas?</div>
+            <div class="alternatives"><div class="alt-option"><input type="radio" name="av1_q3" value="A"><label>A) Identificar stakeholders</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q3" value="B"><label>B) Definir linguagem de programação</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q3" value="C"><label>C) Representar visualmente estrutura e comportamento</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q3" value="D"><label>D) Plano de gerenciamento</label></div></div>
+        </div>
+        <div class="question-card" data-qid="av1_q4">
+            <div class="question-text">4. (Cascata) - Característica fundamental do modelo Cascata?</div>
+            <div class="alternatives"><div class="alt-option"><input type="radio" name="av1_q4" value="A"><label>A) Flexibilidade para mudanças</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q4" value="B"><label>B) Abordagem iterativa repetida</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q4" value="C"><label>C) Ênfase na documentação em detrimento do código</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q4" value="D"><label>D) Fases sequenciais, dependentes da anterior</label></div></div>
+        </div>
+        <div class="question-card" data-qid="av1_q5">
+            <div class="question-text">5. (Coleta eficaz) - Abordagem eficaz para documentar informações críticas?</div>
+            <div class="alternatives"><div class="alt-option"><input type="radio" name="av1_q5" value="A"><label>A) Pesquisa de mercado</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q5" value="B"><label>B) Entrevistas com stakeholders</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q5" value="C"><label>C) Ignorar usuários e seguir práticas</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q5" value="D"><label>D) Foco apenas em requisitos técnicos</label></div></div>
+        </div>
+        <div class="question-card" data-qid="av1_q6">
+            <div class="question-text">6. (Entrevistas) - Principal vantagem de entrevistas com usuários?</div>
+            <div class="alternatives"><div class="alt-option"><input type="radio" name="av1_q6" value="A"><label>A) Economizar tempo</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q6" value="B"><label>B) Insights diretos das necessidades e expectativas</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q6" value="C"><label>C) Evitar documentação</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q6" value="D"><label>D) Reduzir interação com stakeholders</label></div></div>
+        </div>
+        <div class="question-card" data-qid="av1_q7">
+            <div class="question-text">7. (Objetivo coleta) - Objetivo principal da coleta de requisitos?</div>
+            <div class="alternatives"><div class="alt-option"><input type="radio" name="av1_q7" value="A"><label>A) Desenvolver código fonte</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q7" value="B"><label>B) Identificar e documentar necessidades das partes interessadas</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q7" value="C"><label>C) Definir cronograma</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q7" value="D"><label>D) Testes de aceitação</label></div></div>
+        </div>
+        <div class="question-card" data-qid="av1_q8">
+            <div class="question-text">8. (Pesquisa/métodos) - Finalidade de métodos de abordagem e coleta de dados?</div>
+            <div class="alternatives"><div class="alt-option"><input type="radio" name="av1_q8" value="A"><label>A) Documentar código fonte</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q8" value="B"><label>B) Identificar stakeholders</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q8" value="C"><label>C) Coletar informações relevantes para decisões informadas</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q8" value="D"><label>D) Estabelecer cronograma</label></div></div>
+        </div>
+        <div class="question-card" data-qid="av1_q9">
+            <div class="question-text">9. (Entender necessidades) - Objetivo principal coletar requisitos?</div>
+            <div class="alternatives"><div class="alt-option"><input type="radio" name="av1_q9" value="A"><label>A) Compreender necessidades e expectativas dos clientes</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q9" value="B"><label>B) Criar cronograma</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q9" value="C"><label>C) Definir orçamento</label></div>
+            <div class="alt-option"><input type="radio" name="av1_q9" value="D"><label>D) Selecionar tecnologias</label></div></div>
+        </div>
+        <div class="action-bar"><span class="btn btn-secondary reset-av">🔄 Limpar AV1</span><span class="btn btn-primary check-av">📌 Verificar/Corrigir AV1</span></div>
+    </div>
+
+    <!-- AV2 (9 questões) -->
+    <div id="av2" class="tab-pane">
+        <!-- Questões AV2 de 1 a 9 conforme gabarito fornecido -->
+        <div class="question-card"><div class="question-text">1. (Principal objetivo como analista) - Diante do cenário de estoque?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av2_q1" value="A"><label>A) Desenvolver sistema imediatamente</label></div><div class="alt-option"><input type="radio" name="av2_q1" value="B"><label>B) Coletar requisitos de maneira detalhada e abrangente</label></div><div class="alt-option"><input type="radio" name="av2_q1" value="C"><label>C) Criar interface intuitiva</label></div><div class="alt-option"><input type="radio" name="av2_q1" value="D"><label>D) Decidir recursos mais importantes</label></div></div></div>
+        <div class="question-card"><div class="question-text">2. (Falta de alinhamento usuários x equipe) - Abordagem adequada?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av2_q2" value="A"><label>A) Priorizar necessidades da equipe técnica</label></div><div class="alt-option"><input type="radio" name="av2_q2" value="B"><label>B) Priorizar desejos do cliente</label></div><div class="alt-option"><input type="radio" name="av2_q2" value="C"><label>C) Facilitar comunicação aberta para equilíbrio</label></div><div class="alt-option"><input type="radio" name="av2_q2" value="D"><label>D) Contratar equipe externa</label></div></div></div>
+        <div class="question-card"><div class="question-text">3. (Diagramas UML) - Principal vantagem nos processos de RH?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av2_q3" value="A"><label>A) Reduzir entrevistas</label></div><div class="alt-option"><input type="radio" name="av2_q3" value="B"><label>B) Simplificar documentação tornando acessível</label></div><div class="alt-option"><input type="radio" name="av2_q3" value="C"><label>C) Evitar analisar requisitos</label></div><div class="alt-option"><input type="radio" name="av2_q3" value="D"><label>D) Representação visual clara fluxos e interações</label></div></div></div>
+        <div class="question-card"><div class="question-text">4. (Diferença Cascata x Agile)</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av2_q4" value="A"><label>A) Cascata mais flexível, Agile estruturado</label></div><div class="alt-option"><input type="radio" name="av2_q4" value="B"><label>B) Cascata estruturado/sequencial, Agile flexível/interativo</label></div><div class="alt-option"><input type="radio" name="av2_q4" value="C"><label>C) Ambos idênticos</label></div><div class="alt-option"><input type="radio" name="av2_q4" value="D"><label>D) Cascata adequado RH, Agile TI</label></div></div></div>
+        <div class="question-card"><div class="question-text">5. (Desafios RH: agendas lotadas e confidencialidade)</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av2_q5" value="A"><label>A) Entrevistas informais</label></div><div class="alt-option"><input type="radio" name="av2_q5" value="B"><label>B) Apenas níveis hierárquicos altos</label></div><div class="alt-option"><input type="radio" name="av2_q5" value="C"><label>C) Questionários anônimos</label></div><div class="alt-option"><input type="radio" name="av2_q5" value="D"><label>D) Seguir desenvolvimento priorizando prazo</label></div></div></div>
+        <div class="question-card"><div class="question-text">6. (Requisitos dispersos) - Melhor abordagem para organizar e priorizar?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av2_q6" value="A"><label>A) Análise detalhada e documentar em único local</label></div><div class="alt-option"><input type="radio" name="av2_q6" value="B"><label>B) Priorizar opinião da equipe de desenvolvimento</label></div><div class="alt-option"><input type="radio" name="av2_q6" value="C"><label>C) Ignorar dispersos e focar iniciais</label></div><div class="alt-option"><input type="radio" name="av2_q6" value="D"><label>D) Delegar a diferentes membros</label></div></div></div>
+        <div class="question-card"><div class="question-text">7. (Vantagem UML novamente) - Representação processos RH?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av2_q7" value="A"><label>A) Representar clara e detalhadamente fluxos</label></div><div class="alt-option"><input type="radio" name="av2_q7" value="B"><label>B) Facilitar comunicação stakeholders</label></div><div class="alt-option"><input type="radio" name="av2_q7" value="C"><label>C) Simplificar coleta requisitos</label></div><div class="alt-option"><input type="radio" name="av2_q7" value="D"><label>D) Substituir documentação</label></div></div></div>
+        <div class="question-card"><div class="question-text">8. (Métodos de pesquisa) - Finalidade dos métodos nesta fase?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av2_q8" value="A"><label>A) Reduzir documentação</label></div><div class="alt-option"><input type="radio" name="av2_q8" value="B"><label>B) Aprofundar requisitos e traduzir para especificações técnicas</label></div><div class="alt-option"><input type="radio" name="av2_q8" value="C"><label>C) Identificar melhores práticas para marketing</label></div><div class="alt-option"><input type="radio" name="av2_q8" value="D"><label>D) Acelerar desenvolvimento</label></div></div></div>
+        <div class="question-card"><div class="question-text">9. (Reservas online, preferências variadas) - Estratégia mais adequada?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av2_q9" value="A"><label>A) Priorizar clientes com maior histórico</label></div><div class="alt-option"><input type="radio" name="av2_q9" value="B"><label>B) Entrevistas individuais detalhadas</label></div><div class="alt-option"><input type="radio" name="av2_q9" value="C"><label>C) Pesquisas online com perguntas abertas</label></div><div class="alt-option"><input type="radio" name="av2_q9" value="D"><label>D) Ignorar preferências individuais</label></div></div></div>
+        <div class="action-bar"><span class="btn btn-secondary reset-av">🔄 Limpar AV2</span><span class="btn btn-primary check-av">📌 Verificar/Corrigir AV2</span></div>
+    </div>
+
+    <!-- AV3 (9 questões) -->
+    <div id="av3" class="tab-pane">
+        <div class="question-card"><div class="question-text">1. (E-commerce ágil) - Estratégia mais eficaz para coletar e gerenciar requisitos ágeis?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av3_q1" value="A"><label>A) Abordagem tradicional fixa</label></div><div class="alt-option"><input type="radio" name="av3_q1" value="B"><label>B) Foco exclusivo stakeholders internos</label></div><div class="alt-option"><input type="radio" name="av3_q1" value="C"><label>C) Técnicas ágeis: daily, retrospectivas, adaptação contínua</label></div><div class="alt-option"><input type="radio" name="av3_q1" value="D"><label>D) Limitar coleta às fases iniciais</label></div></div></div>
+        <div class="question-card"><div class="question-text">2. (Melhorar coleta) - Atitude para reestruturar coleta de requisitos?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av3_q2" value="A"><label>A) Manter abordagem anterior</label></div><div class="alt-option"><input type="radio" name="av3_q2" value="B"><label>B) Reduzir frequência sessões</label></div><div class="alt-option"><input type="radio" name="av3_q2" value="C"><label>C) Foco apenas técnico</label></div><div class="alt-option"><input type="radio" name="av3_q2" value="D"><label>D) Reestruturar interativa e colaborativa (workshops, questionários, feedback)</label></div></div></div>
+        <div class="question-card"><div class="question-text">3. (Integrar requisitos planejamento) - Estratégia adequada?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av3_q3" value="A"><label>A) Ignorar riscos, execução rápida</label></div><div class="alt-option"><input type="radio" name="av3_q3" value="B"><label>B) Matriz priorização + análise riscos + revisões regulares</label></div><div class="alt-option"><input type="radio" name="av3_q3" value="C"><label>C) Delegar decisões para equipe técnica</label></div><div class="alt-option"><input type="radio" name="av3_q3" value="D"><label>D) Foco requisitos alto nível</label></div></div></div>
+        <div class="question-card"><div class="question-text">4. (Cascata + integração) - Estratégia eficaz para integrar requisitos no modelo Cascata?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av3_q4" value="A"><label>A) Evitar revisões após início desenvolvimento</label></div><div class="alt-option"><input type="radio" name="av3_q4" value="B"><label>B) Pontos de verificação regulares, permitindo ajustes</label></div><div class="alt-option"><input type="radio" name="av3_q4" value="C"><label>C) Seguir rigidamente requisitos iniciais</label></div><div class="alt-option"><input type="radio" name="av3_q4" value="D"><label>D) Delegar ajustes exclusivamente equipe técnica</label></div></div></div>
+        <div class="question-card"><div class="question-text">5. (Requisitos realistas) - Abordagem adequada para implementação pela equipe?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av3_q5" value="A"><label>A) Processo iterativo de revisão com feedback contínuo</label></div><div class="alt-option"><input type="radio" name="av3_q5" value="B"><label>B) Evitar alterações frequentes</label></div><div class="alt-option"><input type="radio" name="av3_q5" value="C"><label>C) Limitar apenas funcionalidades principais</label></div><div class="alt-option"><input type="radio" name="av3_q5" value="D"><label>D) Documentação extensiva de cada requisito</label></div></div></div>
+        <div class="question-card"><div class="question-text">6. (Revisitar coleta) - Mais adequado a fazer?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av3_q6" value="A"><label>A) Continuar mesmo método</label></div><div class="alt-option"><input type="radio" name="av3_q6" value="B"><label>B) Abordagem focada: brainstorming direcionado + entrevistas + prototipagem rápida</label></div><div class="alt-option"><input type="radio" name="av3_q6" value="C"><label>C) Limitar a aspectos técnicos</label></div><div class="alt-option"><input type="radio" name="av3_q6" value="D"><label>D) Delegar exclusivamente equipe desenvolvimento</label></div></div></div>
+        <div class="question-card"><div class="question-text">7. (Sistema reservas hotéis) - Estratégia eficaz para coletar requisitos eficientemente?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av3_q7" value="A"><label>A) Mesma abordagem complexa</label></div><div class="alt-option"><input type="radio" name="av3_q7" value="B"><label>B) Limitar à equipe desenvolvimento</label></div><div class="alt-option"><input type="radio" name="av3_q7" value="C"><label>C) Brainstorming + entrevistas com usuários finais + análise competitiva</label></div><div class="alt-option"><input type="radio" name="av3_q7" value="D"><label>D) Foco requisitos técnicos avançados</label></div></div></div>
+        <div class="question-card"><div class="question-text">8. (Plataforma cursos online diversos) - O que fazer?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av3_q8" value="A"><label>A) Base exclusiva em pesquisas online</label></div><div class="alt-option"><input type="radio" name="av3_q8" value="B"><label>B) Grupos focais + pesquisas online + análise redes sociais</label></div><div class="alt-option"><input type="radio" name="av3_q8" value="C"><label>C) Foco apenas necessidades tecnológicas</label></div><div class="alt-option"><input type="radio" name="av3_q8" value="D"><label>D) Priorizar grupo mais ativo</label></div></div></div>
+        <div class="question-card"><div class="question-text">9. (App tarefas equipes pequenas) - Como realizar coleta de requisitos?</div><div class="alternatives"><div class="alt-option"><input type="radio" name="av3_q9" value="A"><label>A) Concentrar em funcionalidades inovadoras</label></div><div class="alt-option"><input type="radio" name="av3_q9" value="B"><label>B) Benchmarks sem envolver usuários</label></div><div class="alt-option"><input type="radio" name="av3_q9" value="C"><label>C) Entrevistas simplificadas + testes rápidos com protótipos</label></div><div class="alt-option"><input type="radio" name="av3_q9" value="D"><label>D) Análise de mercado sem interação direta</label></div></div></div>
+        <div class="action-bar"><span class="btn btn-secondary reset-av">🔄 Limpar AV3</span><span class="btn btn-primary check-av">📌 Verificar/Corrigir AV3</span></div>
+    </div>
+
+    <!-- Área de resultado global -->
+    <div class="result-area" id="resultArea">
+        <h3 style="margin-top:0">📊 RESULTADO FINAL DAS AVALIAÇÕES</h3>
+        <div id="resultsContainer">
+            <p style="color:#475569">Clique em "Gerar Resultado Final" para ver o desempenho.</p>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+            <button id="finalResultBtn" class="btn btn-primary" style="background:#0f172a;">✅ Gerar Resultado Final</button>
+        </div>
+    </div>
+    <footer>Simulado AV1/AV2/AV3 | Selecione as alternativas e confira sua pontuação.</footer>
+</div>
+
+<script>
+    // GABARITOS OFICIAIS (com base nas respostas fornecidas)
+    const GABARITO = {
+        av1: { q1:"B", q2:"A", q3:"C", q4:"D", q5:"B", q6:"B", q7:"B", q8:"C", q9:"A" },
+        av2: { q1:"B", q2:"C", q3:"D", q4:"B", q5:"C", q6:"A", q7:"A", q8:"B", q9:"C" },
+        av3: { q1:"C", q2:"D", q3:"B", q4:"B", q5:"A", q6:"B", q7:"C", q8:"B", q9:"C" }
+    };
+
+    function getAnswersByAv(avId) {
+        let answers = {};
+        for(let i=1; i<=9; i++) {
+            let radioName = `${avId}_q${i}`;
+            let selected = document.querySelector(`input[name="${radioName}"]:checked`);
+            answers[`q${i}`] = selected ? selected.value : null;
+        }
+        return answers;
+    }
+
+    function computeScore(avKey, answers) {
+        const gab = GABARITO[avKey];
+        let correct = 0;
+        for(let i=1; i<=9; i++) {
+            let q = `q${i}`;
+            if(answers[q] && gab[q] === answers[q]) correct++;
+        }
+        return correct;
+    }
+
+    function renderResults() {
+        const av1Ans = getAnswersByAv('av1');
+        const av2Ans = getAnswersByAv('av2');
+        const av3Ans = getAnswersByAv('av3');
+        const score1 = computeScore('av1', av1Ans);
+        const score2 = computeScore('av2', av2Ans);
+        const score3 = computeScore('av3', av3Ans);
+        const total = score1+score2+score3;
+        const maxTotal = 27;
+        const container = document.getElementById('resultsContainer');
+        container.innerHTML = `
+            <div class="result-stats">
+                <div class="stat-card"><strong>📘 AV1</strong><div class="stat-value">${score1}/9</div><span>${Math.round(score1/9*100)}%</span></div>
+                <div class="stat-card"><strong>📗 AV2</strong><div class="stat-value">${score2}/9</div><span>${Math.round(score2/9*100)}%</span></div>
+                <div class="stat-card"><strong>📙 AV3</strong><div class="stat-value">${score3}/9</div><span>${Math.round(score3/9*100)}%</span></div>
+                <div class="total-score">🏆 TOTAL: ${total}/${maxTotal} (${Math.round(total/maxTotal*100)}%)</div>
+            </div>
+            <hr>
+            <p style="margin-bottom:0; font-size:0.9rem">✅ Resultado final com base nas respostas selecionadas. Utilize os botões "Verificar/Corrigir" por aba para checar respostas individuais.</p>
+        `;
+    }
+
+    // Verificar uma aba específica (destaca visualmente o que está errado e mostra alert simples)
+    function checkAv(avId) {
+        const answers = getAnswersByAv(avId);
+        const gab = GABARITO[avId];
+        let correctCount = 0;
+        let feedbackLines = [];
+        for(let i=1; i<=9; i++) {
+            let userAns = answers[`q${i}`];
+            let correctAns = gab[`q${i}`];
+            let isCorrect = (userAns && userAns === correctAns);
+            if(isCorrect) correctCount++;
+            let status = isCorrect ? "✅" : (userAns ? "❌ (errada)" : "⚠️ (não respondida)");
+            let expectedMsg = isCorrect ? "" : ` (Correta: ${correctAns})`;
+            feedbackLines.push(`Questão ${i}: ${status}${expectedMsg}`);
+        }
+        alert(`[${avId.toUpperCase()}] Você acertou ${correctCount}/9 questões.\n\n${feedbackLines.join('\n')}\n\nDica: Reveja as alternativas e use o gabarito.`);
+        return correctCount;
+    }
+
+    function resetAv(avId) {
+        for(let i=1; i<=9; i++) {
+            let radios = document.querySelectorAll(`input[name="${avId}_q${i}"]`);
+            radios.forEach(r => r.checked = false);
+        }
+        alert(`${avId.toUpperCase()} limpa!`);
+    }
+
+    // Event Listeners dinâmicos
+    document.querySelectorAll('.check-av').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const pane = btn.closest('.tab-pane');
+            let av = null;
+            if(pane.id === 'av1') av = 'av1';
+            else if(pane.id === 'av2') av = 'av2';
+            else if(pane.id === 'av3') av = 'av3';
+            if(av) checkAv(av);
+        });
+    });
+
+    document.querySelectorAll('.reset-av').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const pane = btn.closest('.tab-pane');
+            let av = null;
+            if(pane.id === 'av1') av = 'av1';
+            else if(pane.id === 'av2') av = 'av2';
+            else if(pane.id === 'av3') av = 'av3';
+            if(av) resetAv(av);
+        });
+    });
+
+    document.getElementById('finalResultBtn').addEventListener('click', () => {
+        renderResults();
+    });
+
+    // sistema de abas
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const panes = document.querySelectorAll('.tab-pane');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.getAttribute('data-tab');
+            panes.forEach(pane => pane.classList.remove('active-pane'));
+            document.getElementById(tabId).classList.add('active-pane');
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
+    // inicial: já carregar resultado vazio pode esperar o clique; opcional mostrar sumário básico
+    setTimeout(() => {
+        renderResults(); // mostra estatísticas iniciais (respostas vazias => 0)
+    }, 100);
+</script>
+</body>
+</html>
